@@ -63,18 +63,18 @@ class CoolUtil
 	{
 		var libraryArray:Array<String> = [];
 
-		#if sys
-		var unfilteredLibrary = FileSystem.readDirectory('$subDir/$library');
+		
+		
+		for (folder in Assets.list().filter(files -> files.contains('$subDir/$library')))
+		{        	}
+		
 
-		for (folder in unfilteredLibrary)
-		{
-			if (!folder.contains('.'))
-				libraryArray.push(folder);
-		}
-		trace(libraryArray);
-		#end
-
-		return libraryArray;
+		var daFolder:String = folder.replace('$subDir/$library', '');
+		daFolder = daFolder.replace(daFolder.substring(daFolder.indexOf('/'), daFolder.length), ''); // fancy
+		if (!daFolder.startsWith('.') && !libraryArray.contains(daFolder))
+		libraryArray.push(daFolder);
+		
+			return libraryArray;
 	}
 
 	public static function getAnimsFromTxt(path:String):Array<Array<String>>
