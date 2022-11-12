@@ -59,52 +59,51 @@ class OptionsMenuState extends MusicBeatState
 			],
 			'preferences' => [
 				[
-					['Gameplay Settings', null],
+					['Game Settings', null],
 					['', null],
-					['Controller Mode', getFromOption],
 					['Downscroll', getFromOption],
 					['Centered Notefield', getFromOption],
 					['Ghost Tapping', getFromOption],
-					['', null],
-					['Text Settings', null],
-					['', null],
 					['Display Accuracy', getFromOption],
 					['Skip Text', getFromOption],
 					['', null],
 					['Meta Settings', null],
 					['', null],
-					['Auto Pause', getFromOption],
-					#if !neko ["Framerate Cap", getFromOption], #end
+					["Framerate Cap", getFromOption],
 					['FPS Counter', getFromOption],
 					['Memory Counter', getFromOption],
-					#if !neko ['Debug Info', getFromOption], #end
+					['Debug Info', getFromOption],
+					['', null],
+					['Forever Settings', null],
+					['', null],
+					['Use Forever Chart Editor', getFromOption],
+					['Custom Titlescreen', getFromOption]
 				]
 			],
 			'appearance' => [
 				[
-					['Judgements', null],
+					['Common Settings', null],
 					['', null],
-					["UI Skin", getFromOption],
+					['Disable Antialiasing', getFromOption],
+					['No Camera Note Movement', getFromOption],
 					['Fixed Judgements', getFromOption],
 					['Simply Judgements', getFromOption],
-					['Counter', getFromOption],
-					['', null],
-					['Notes', null],
-					['', null],
-					["Note Skin", getFromOption],
-					["Clip Style", getFromOption],
-					['No Camera Note Movement', getFromOption],
-					['Disable Note Splashes', getFromOption],
-					['Opaque Arrows', getFromOption],
-					['Opaque Holds', getFromOption],
 					['', null],
 					['Accessibility Settings', null],
 					['', null],
 					['Filter', getFromOption],
-					['Disable Antialiasing', getFromOption],
-					["Stage Opacity", getFromOption],
-					["Opacity Type", getFromOption],
+					["Stage Darkness", getFromOption],
 					['Reduced Movements', getFromOption],
+					// this shouldn't be get from option, just testing
+					['', null],
+					['User Interface', null],
+					['', null],
+					["UI Skin", getFromOption],
+					["Note Skin", getFromOption],
+					["BF Skin", getFromOption],
+					['Disable Note Splashes', getFromOption],
+					['Opaque Arrows', getFromOption],
+					['Opaque Holds', getFromOption],
 				]
 			]
 		];
@@ -117,7 +116,16 @@ class OptionsMenuState extends MusicBeatState
 
 		// call the options menu
 		var bg = new FlxSprite(-85);
-		bg.loadGraphic(Paths.image('menus/base/menuDesat'));
+		switch(Init.trueSettings.get('BF Skin')){
+			case 'Beta':
+				bg.loadGraphic(Paths.image('menus/base/menucards/menu-betaDesat'));
+			case 'Mean':
+				bg.loadGraphic(Paths.image('menus/base/menucards/menu-meanDesat'));
+			case 'Cheffriend':
+				bg.loadGraphic(Paths.image('menus/base/menucards/menu-chefDesat'));
+			default:
+				bg.loadGraphic(Paths.image('menus/base/menucards/menu-bfDesat'));
+		}
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
@@ -134,10 +142,10 @@ class OptionsMenuState extends MusicBeatState
 		add(infoText);
 
 		loadSubgroup('main');
-	
-	#if android
-	addVirtualPad(LEFT_FULL, A_B);
-	#end
+		
+		#if android
+		addVirtualPad(LEFT_FULL, A_B);
+		#end
 	}
 
 	private var currentAttachmentMap:Map<Alphabet, Dynamic>;
@@ -207,13 +215,11 @@ class OptionsMenuState extends MusicBeatState
 			if (currentAttachmentMap != null)
 				setAttachmentAlpha(currentAttachmentMap.get(activeSubgroup.members[i]), 0.6);
 			activeSubgroup.members[i].targetY = (i - curSelection) / 2;
-			activeSubgroup.members[i].xTo = 200 + ((i - curSelection) * 25);
 
 			// check for null members and hardcode the dividers
-			if (categoryMap.get(curCategory)[0][i][1] == null)
-			{
+			if (categoryMap.get(curCategory)[0][i][1] == null) {
 				activeSubgroup.members[i].alpha = 1;
-				activeSubgroup.members[i].xTo += Std.int((FlxG.width / 2) - ((activeSubgroup.members[i].text.length / 2) * 40)) - 200;
+				activeSubgroup.members[i].xTo = Std.int((FlxG.width / 2) - ((activeSubgroup.members[i].text.length / 2) * 40));
 			}
 		}
 
@@ -323,10 +329,10 @@ class OptionsMenuState extends MusicBeatState
 
 	function updateSelections()
 	{
-		var up = controls.UI_UP;
-		var down = controls.UI_DOWN;
-		var up_p = controls.UI_UP_P;
-		var down_p = controls.UI_DOWN_P;
+		var up = controls.UP;
+		var down = controls.DOWN;
+		var up_p = controls.UP_P;
+		var down_p = controls.DOWN_P;
 		var controlArray:Array<Bool> = [up, down, up_p, down_p];
 
 		if (controlArray.contains(true))
@@ -396,7 +402,7 @@ class OptionsMenuState extends MusicBeatState
 					case Init.SettingTypes.Selector:
 						// selector
 						var selector:Selector = new Selector(10, letter.y, letter.text, Init.gameSettings.get(letter.text)[4],
-							(letter.text == 'Framerate Cap') ? true : false, (letter.text == 'Stage Opacity') ? true : false);
+							(letter.text == 'Framerate Cap') ? true : false, (letter.text == 'Stage Darkness') ? true : false);
 
 						extrasMap.set(letter, selector);
 					default:
@@ -441,14 +447,14 @@ class OptionsMenuState extends MusicBeatState
 					#if !html5
 					var selector:Selector = currentAttachmentMap.get(activeSubgroup.members[curSelection]);
 
-					if (!controls.UI_LEFT)
+					if (!controls.LEFT)
 						selector.selectorPlay('left');
-					if (!controls.UI_RIGHT)
+					if (!controls.RIGHT)
 						selector.selectorPlay('right');
 
-					if (controls.UI_RIGHT_P)
+					if (controls.RIGHT_P)
 						updateSelector(selector, 1);
-					else if (controls.UI_LEFT_P)
+					else if (controls.LEFT_P)
 						updateSelector(selector, -1);
 					#end
 				default:
@@ -458,10 +464,7 @@ class OptionsMenuState extends MusicBeatState
 	}
 
 	function updateCheckmark(checkmark:FNFSprite, animation:Bool)
-	{
-		if (checkmark != null)
-			checkmark.playAnim(Std.string(animation));
-	}
+		checkmark.playAnim(Std.string(animation));
 
 	function updateSelector(selector:Selector, updateBy:Int)
 	{
@@ -517,18 +520,17 @@ class OptionsMenuState extends MusicBeatState
 			Init.saveSettings();
 		}
 		else if (!fps && !bgdark)
-		{
+		{ 
 			// get the current option as a number
 			var storedNumber:Int = 0;
 			var newSelection:Int = storedNumber;
-			if (selector.options != null)
-			{
+			if (selector.options != null) {
 				for (curOption in 0...selector.options.length)
 				{
 					if (selector.options[curOption] == selector.optionChosen.text)
 						storedNumber = curOption;
 				}
-
+				
 				newSelection = storedNumber + updateBy;
 				if (newSelection < 0)
 					newSelection = selector.options.length - 1;
@@ -564,10 +566,7 @@ class OptionsMenuState extends MusicBeatState
 		}
 	}
 
-	public function openControlmenu()
-	{
-		
-#if android
+	#if android
 	public function openAndroidControlmenu()
 	{
 		if (controls.ACCEPT)
@@ -585,8 +584,9 @@ class OptionsMenuState extends MusicBeatState
 		}
 	}
 	#end
-
-if (controls.ACCEPT)
+	public function openControlmenu()
+	{
+		if (controls.ACCEPT)
 		{
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 			lockedMovement = true;
