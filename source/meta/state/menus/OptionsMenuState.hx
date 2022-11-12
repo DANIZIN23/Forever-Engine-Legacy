@@ -563,10 +563,6 @@ class OptionsMenuState extends MusicBeatState
 			});
 		}
 	}
-
-	public function openControlmenu()
-	{
-		
 #if android
 	public function openAndroidControlmenu()
 	{
@@ -585,8 +581,9 @@ class OptionsMenuState extends MusicBeatState
 		}
 	}
 	#end
-
-if (controls.ACCEPT)
+	public function openControlmenu()
+	{
+		if (controls.ACCEPT)
 		{
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 			lockedMovement = true;
