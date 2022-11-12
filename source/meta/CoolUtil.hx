@@ -5,12 +5,13 @@ import meta.state.PlayState;
 
 using StringTools;
 
-#if sys
+
 import sys.FileSystem;
-#end
+
 
 class CoolUtil
 {
+	// tymgus45
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 	public static var difficultyLength = difficultyArray.length;
 
@@ -63,20 +64,19 @@ class CoolUtil
 	{
 		var libraryArray:Array<String> = [];
 
-		
-		
 		for (folder in Assets.list().filter(files -> files.contains('$subDir/$library')))
-		{        	}
-		
+		{
+			// simulating da FileSystem.readDirectory?
+			var daFolder:String = folder.replace('$subDir/$library', '');
+			daFolder = daFolder.replace(daFolder.substring(daFolder.indexOf('/'), daFolder.length), ''); // fancy
+			if (!daFolder.startsWith('.') && !libraryArray.contains(daFolder))
+				libraryArray.push(daFolder);
+		}
 
-		var daFolder:String = folder.replace('$subDir/$library', '');
-		daFolder = daFolder.replace(daFolder.substring(daFolder.indexOf('/'), daFolder.length), ''); // fancy
-		if (!daFolder.startsWith('.') && !libraryArray.contains(daFolder))
-		libraryArray.push(daFolder);
-		
-			return libraryArray;
+		return libraryArray;
 	}
 
+	
 	public static function getAnimsFromTxt(path:String):Array<Array<String>>
 	{
 		var fullText:String = Assets.getText(path);
