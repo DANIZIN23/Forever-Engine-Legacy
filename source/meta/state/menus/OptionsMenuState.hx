@@ -45,15 +45,14 @@ class OptionsMenuState extends MusicBeatState
 
 		// NOTE : Make sure to check Init.hx if you are trying to add options.
 
-		#if DISCORD_RPC
-		Discord.changePresence('OPTIONS MENU', 'Main Menu');
-		#end
+		
 
 		categoryMap = [
 			'main' => [
 				[
 					['preferences', callNewGroup],
 					['appearance', callNewGroup],
+					#if android ['android controls', openAndroidControlmenu],#end
 					['controls', openControlmenu],
 					['exit', exitMenu]
 				]
@@ -135,6 +134,10 @@ class OptionsMenuState extends MusicBeatState
 		add(infoText);
 
 		loadSubgroup('main');
+	
+	#if android
+	addVirtualPad(LEFT_FULL, A_B);
+	#end
 	}
 
 	private var currentAttachmentMap:Map<Alphabet, Dynamic>;
