@@ -45,6 +45,7 @@
 	<source path="source" />
 	<assets path="assets" />
 	<assets path="assets/songs" />
+	<assets path="assets/android" if="android"/>
 	<assets path="assets/music" preload="true" />
 	<assets path="FE-CrashDialog.exe" type="template" if="windows release" />
 
